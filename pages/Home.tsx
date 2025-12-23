@@ -19,7 +19,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40 z-10"></div>
           
           <img 
-            src="public/images/drone.jpg" 
+            src="images/drone.jpg" 
             alt="Cinematic Drone View" 
             className="w-full h-full object-cover animate-slow-zoom opacity-80"
           />
