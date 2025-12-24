@@ -34,10 +34,10 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500"></span>
               </span>
-              Teknologi Generasi Baru
+              Teknologi Generasi Baru 
             </span>
           </div>
-
+{/* test */}
           {/* Main Headline - Adaptive Sizes */}
           <h1 className="animate-fade-in-up delay-100 text-6xl sm:text-7xl md:text-9xl font-bold text-white mb-6 tracking-tighter leading-[0.95]">
             Pandangan <br className="hidden sm:block" /> <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50">Baru.</span>

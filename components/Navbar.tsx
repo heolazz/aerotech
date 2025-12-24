@@ -371,7 +371,7 @@ Mohon info rekening pembayaran. Terima kasih.`;
               <div className="flex flex-col md:flex-row justify-between items-end gap-8 border-t border-gray-100 pt-6">
                  <div className="text-sm text-slate-500 max-w-xs">
                     <p className="font-bold text-slate-900 mb-1">Pembayaran:</p>
-                    <p>BCA 883-091-2234</p>
+                    <p>BCA 883-091tec-2234</p>
                     <p>a/n PT AeroTech Indonesia</p>
                  </div>
                  
