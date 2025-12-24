@@ -128,7 +128,7 @@ Mohon info rekening pembayaran. Terima kasih.`;
               }}
             >
               <span className={`text-xl font-bold tracking-[0.2em] uppercase transition-colors duration-300 ${textColorClass}`}>
-                AeroTech
+                Gdrone
               </span>
             </div>
             
