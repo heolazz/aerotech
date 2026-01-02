@@ -1,8 +1,11 @@
 import React, { useState, useRef, Suspense, useEffect } from 'react';
-import { Box, Settings, Fan, Layers, Zap, ChevronRight, Check, AlertCircle, Power } from 'lucide-react';
+import { Box, Settings, Fan, Layers, Zap, ChevronRight, Check, AlertCircle, Power, Loader2 } from 'lucide-react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls, Stage, PerspectiveCamera } from '@react-three/drei';
 import * as THREE from 'three';
+import { useNavigate } from 'react-router-dom'; // Navigasi
+import { db } from '../firebase'; // Import Firebase Database
+import { addDoc, collection, serverTimestamp } from 'firebase/firestore'; // Fungsi Firestore
 
 // --- Types & Constants ---
 type DroneType = 'STANDARD' | 'RACING' | 'CINEWHOOP' | 'AGRICULTURE' | 'HEAVY_LIFT';
@@ -31,7 +34,7 @@ interface DroneModelProps {
   engineOn: boolean;
 }
 
-// --- 3D Components ---
+// --- 3D Components (TAMPILAN DRONE TETAP SAMA PERSIS) ---
 
 const DroneModel: React.FC<DroneModelProps> = ({ colors, type, selectedComponents, engineOn }) => {
   const propRefs = useRef<THREE.Group[]>([]);
@@ -184,13 +187,17 @@ const DroneModel: React.FC<DroneModelProps> = ({ colors, type, selectedComponent
   );
 };
 
+// --- MAIN PAGE LOGIC (UPDATED WITH FIREBASE) ---
+
 const CustomOrder: React.FC = () => {
+  const navigate = useNavigate(); // Hook untuk redirect
   const [droneType, setDroneType] = useState<DroneType>('STANDARD');
   const [droneColors, setDroneColors] = useState({ body: '#0ea5e9', arm: '#334155', prop: '#cbd5e1' });
   const [selectedComponents, setSelectedComponents] = useState<string[]>([]);
   const [formData, setFormData] = useState({ name: '', email: '', phone: '', details: '' });
   const [currentStep, setCurrentStep] = useState(1);
   const [engineOn, setEngineOn] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // State Loading Submit
 
   const basePrice = PRICING[droneType];
   const componentsPrice = selectedComponents.reduce((acc, id) => {
@@ -205,11 +212,54 @@ const CustomOrder: React.FC = () => {
     setSelectedComponents(prev => prev.includes(id) ? prev.filter(c => c !== id) : [...prev, id]);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // LOGIKA SUBMIT KE FIREBASE
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    alert(`Konfigurasi Terkirim!\nTotal: ${formatRupiah(totalPrice)}`);
-    setCurrentStep(1);
-    setSelectedComponents([]);
+    setIsSubmitting(true); // Mulai loading
+
+    try {
+      // 1. Generate Order ID
+      const customOrderId = `CUST-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      // 2. Buat Ringkasan Spek
+      const specsSummary = `
+        Tipe: ${droneType}, 
+        Warna Body: ${droneColors.body}, 
+        Addons: ${selectedComponents.join(', ')}
+      `;
+
+      // 3. Simpan ke Firestore
+      await addDoc(collection(db, "orders"), {
+        orderId: customOrderId,
+        customerName: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        items: `Custom Build: ${droneType}`,
+        specs: specsSummary,
+        details: formData.details,
+        totalPrice: totalPrice,
+        status: 'PENDING', // Status awal selalu PENDING
+        type: 'CUSTOM',
+        createdAt: serverTimestamp()
+      });
+
+      // 4. Berhasil
+      alert(`Konfigurasi Terkirim!\nKode Tracking Anda: ${customOrderId}\nSilakan simpan kode ini untuk melacak status pesanan.`);
+      
+      // Reset State
+      setFormData({ name: '', email: '', phone: '', details: '' });
+      setSelectedComponents([]);
+      setCurrentStep(1);
+      
+      // Redirect ke halaman tracking
+      navigate('/tracking');
+
+    } catch (error) {
+      console.error("Error saving custom order: ", error);
+      alert("Terjadi kesalahan saat mengirim pesanan. Silakan coba lagi.");
+    } finally {
+      setIsSubmitting(false); // Selesai loading
+    }
   };
 
   const colors = [
@@ -323,11 +373,32 @@ const CustomOrder: React.FC = () => {
             <div className="animate-in slide-in-from-right duration-500">
                <h3 className="text-xs font-black text-slate-900 uppercase tracking-[0.2em] mb-8 border-b pb-4">04. Final Confirmation</h3>
                <form onSubmit={handleSubmit} className="space-y-6">
-                  <input required placeholder="Nama Lengkap" className="w-full border-b py-3 outline-none text-xs font-bold" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
-                  <input required type="email" placeholder="Email" className="w-full border-b py-3 outline-none text-xs font-bold" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
-                  <input required type="tel" placeholder="Nomor WA" className="w-full border-b py-3 outline-none text-xs font-bold" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
-                  <button type="submit" className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em]">Kirim Penawaran</button>
-                  <button type="button" onClick={() => setCurrentStep(1)} className="w-full text-slate-400 text-[10px] uppercase font-bold tracking-widest py-2">Edit</button>
+                  <div>
+                    <input required placeholder="Nama Lengkap" className="w-full border-b py-3 outline-none text-xs font-bold bg-transparent" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                  </div>
+                  <div>
+                    <input required type="email" placeholder="Email" className="w-full border-b py-3 outline-none text-xs font-bold bg-transparent" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                  </div>
+                  <div>
+                    <input required type="tel" placeholder="Nomor WA" className="w-full border-b py-3 outline-none text-xs font-bold bg-transparent" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
+                  </div>
+                  
+                  <button 
+                    type="submit" 
+                    disabled={isSubmitting}
+                    className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] disabled:bg-slate-400 flex justify-center items-center gap-2"
+                  >
+                    {isSubmitting ? <Loader2 className="animate-spin" /> : 'Kirim Penawaran'}
+                  </button>
+                  
+                  <button 
+                    type="button" 
+                    disabled={isSubmitting}
+                    onClick={() => setCurrentStep(1)} 
+                    className="w-full text-slate-400 text-[10px] uppercase font-bold tracking-widest py-2 hover:text-slate-600 transition-colors"
+                  >
+                    Edit Konfigurasi
+                  </button>
                </form>
             </div>
           )}
@@ -335,7 +406,7 @@ const CustomOrder: React.FC = () => {
 
         {currentStep === 1 && (
           <div className="p-4 lg:p-8 border-t border-slate-50 bg-white fixed lg:relative bottom-0 left-0 w-full z-30">
-            <button onClick={() => setCurrentStep(2)} className="w-full bg-slate-900 text-white py-4 lg:py-5  font-black uppercase text-[10px] lg:text-xs tracking-[0.3em] flex justify-between px-6 lg:px-10 items-center group transition-all active:scale-95 shadow-2xl">
+            <button onClick={() => setCurrentStep(2)} className="w-full bg-slate-900 text-white py-4 lg:py-5 font-black uppercase text-[10px] lg:text-xs tracking-[0.3em] flex justify-between px-6 lg:px-10 items-center group transition-all active:scale-95 shadow-2xl">
               <span>Checkout</span>
               <ChevronRight className="w-4 h-4 lg:w-5 lg:h-5 group-hover:translate-x-2 transition-transform" />
             </button>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useCart } from '../context/CartContext';
 import { Drone, DroneCategory } from '../types';
 import { X, ArrowRight, Battery, Wifi, Camera as CameraIcon, Info, Scale, Ruler, Cpu, ChevronRight } from 'lucide-react';
 
@@ -104,7 +105,7 @@ const MOCK_DRONES: Drone[] = [
 const Catalog: React.FC = () => {
   const [filter, setFilter] = useState<string>('All');
   const [selectedDrone, setSelectedDrone] = useState<Drone | null>(null);
-
+  const { addToCart } = useCart();
   const categories = ['All', ...Object.values(DroneCategory)];
 
   const filteredDrones = filter === 'All' 
@@ -116,7 +117,16 @@ const Catalog: React.FC = () => {
   };
 
   const handleOrder = (drone: Drone) => {
-    alert(`Pesanan untuk ${drone.name} telah ditambahkan ke keranjang!`);
+    // Tambahkan item ke global state
+    addToCart({
+      id: drone.id,
+      name: drone.name,
+      price: drone.price,
+      image: drone.image,
+      qty: 1
+    });
+    // Opsional: Kasih notif kecil atau feedback visual
+    alert(`${drone.name} masuk keranjang! Cek ikon tas di pojok kanan atas.`);
   };
 
   return (
