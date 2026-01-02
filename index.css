@@ -1,0 +1,61 @@
+/* ... Tailwind base/components/utilities tetap sama ... */
+/* ... Scrollbar & Animation tetap sama ... */
+
+/* PERBAIKAN PRINT STYLING */
+@media print {
+  /* 1. Sembunyikan SEMUA konten terlebih dahulu dengan visibility */
+  /* Kita tidak pakai display: none agar layout tidak hancur total */
+  body {
+    visibility: hidden;
+    background-color: white;
+  }
+
+  /* 2. Tampilkan hanya Modal/Elemen Target */
+  /* Gunakan class spesifik modal kamu. 
+     Note: Pastikan z-index sesuai dengan yang di file React (z-[70] di kode sebelumnya) */
+  .fixed.z-50,
+  .fixed.z-\[70\], /* Menambahkan support untuk z-[70] invoice kamu */
+  .print-content { 
+    visibility: visible !important;
+    
+    /* PENTING: Posisikan ulang agar mulai dari pojok kertas */
+    position: absolute !important;
+    left: 0 !important;
+    top: 0 !important;
+    
+    /* Pastikan lebar & tinggi tidak terpotong */
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    
+    /* Reset style modal */
+    background: white !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    
+    /* PENTING AGAR TIDAK KEPOTONG: Izinkan konten memanjang ke bawah */
+    overflow: visible !important; 
+    max-height: none !important;
+  }
+
+  /* 3. Pastikan konten di dalam modal juga visible */
+  .fixed.z-50 *,
+  .fixed.z-\[70\] * {
+    visibility: visible !important;
+  }
+
+  /* 4. Sembunyikan elemen UI pengganggu (Tombol Close, Footer Print) */
+  /* Kita sembunyikan tombol apapun di dalam modal saat print */
+  .fixed button,
+  button {
+    display: none !important; 
+  }
+
+  /* 5. Force Text Color & Background */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
