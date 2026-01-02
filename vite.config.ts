@@ -24,12 +24,12 @@ export default defineConfig({
         scope: '/',     // Wajib ada
         icons: [
           {
-            src: 'images/logo.png', // Pastikan file ini ada di folder public
+            src: 'images/logo2.png', // Pastikan file ini ada di folder public
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'images/logo.png', // Pastikan file ini ada di folder public
+            src: 'images/logo2.png', // Pastikan file ini ada di folder public
             sizes: '512x512',
             type: 'image/png'
           }
