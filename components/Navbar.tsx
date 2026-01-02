@@ -102,9 +102,18 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
             
             {/* Logo */}
             <div className="flex-shrink-0 cursor-pointer z-50 relative" onClick={() => handleNavClick('home')}>
-              <span className={`text-xl font-bold tracking-[0.2em] uppercase transition-colors duration-300 ${textColorClass}`}>
+              {/* <span className={`text-xl font-bold tracking-[0.2em] lowercase transition-colors duration-300 ${textColorClass}`}>
                 Gdrone
-              </span>
+              </span> */}
+              <img 
+                src="/images/logo.png" 
+                alt="Gdrone Logo" 
+                className={`
+                  transition-all duration-300 w-auto object-contain
+                  h-12 md:h-16  /* <-- UKURAN DIPERBESAR (Tadi h-8 md:h-10) */
+                  ${showSolidNav ? '' : 'brightness-0 invert'} /* <-- EFEK JADI PUTIH */
+                `} 
+              />
             </div>
             
             {/* Desktop Menu (Center Links) */}
