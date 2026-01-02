@@ -197,7 +197,7 @@ const Navbar: React.FC<NavbarProps> = ({ activePage, onNavigate }) => {
         
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-[1400px] mx-auto px-6 py-12 h-full flex flex-col justify-start">
+          <div className="max-w-[1400px] mx-auto px-6 h-full flex flex-col justify-start">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12 w-full">
               {/* Left Column: Menu */}
               <div className="flex flex-col space-y-2">
