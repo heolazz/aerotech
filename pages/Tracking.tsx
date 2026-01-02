@@ -1,13 +1,25 @@
 import React, { useState } from 'react';
 import { db } from '../firebase';
 import { collection, query, where, getDocs } from 'firebase/firestore';
-import { Search, Package, CheckCircle, Truck, Clock, MapPin, AlertCircle, Box } from 'lucide-react';
+import { 
+  Search, 
+  Package, 
+  CheckCircle2, 
+  Truck, 
+  Settings, 
+  MapPin, 
+  ArrowRight,
+  Box,
+  ChevronRight,
+  Loader2
+} from 'lucide-react';
 
 const Tracking: React.FC = () => {
   const [orderId, setOrderId] = useState('');
   const [orderData, setOrderData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [searched, setSearched] = useState(false); // State untuk animasi transisi
 
   // Fungsi Mencari Data di Firebase
   const handleTrack = async (e: React.FormEvent) => {
@@ -17,164 +29,229 @@ const Tracking: React.FC = () => {
     setLoading(true);
     setError('');
     setOrderData(null);
+    setSearched(true);
 
     try {
-      // Cari dokumen di collection 'orders' dimana orderId == input user
       const q = query(collection(db, "orders"), where("orderId", "==", orderId.trim()));
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        // Data Ditemukan!
         const data = querySnapshot.docs[0].data();
         setOrderData(data);
       } else {
-        // Data Kosong
-        setError('ID Pesanan tidak ditemukan. Mohon periksa kembali.');
+        setError('ID Pesanan tidak ditemukan.');
       }
     } catch (err) {
       console.error(err);
-      setError('Terjadi kesalahan koneksi. Coba lagi nanti.');
+      setError('Terjadi kesalahan koneksi.');
     } finally {
       setLoading(false);
     }
   };
 
-  // Helper untuk menentukan apakah step timeline aktif
-  const isStepActive = (currentStatus: string, stepStatus: string) => {
+  // Helper Timeline
+  const getStepStatus = (currentStatus: string, step: string) => {
     const levels = ['PENDING', 'PROCESS', 'SHIPPED', 'DELIVERED'];
-    const currentIndex = levels.indexOf(currentStatus);
-    const stepIndex = levels.indexOf(stepStatus);
-    return currentIndex >= stepIndex;
+    const currentIdx = levels.indexOf(currentStatus);
+    const stepIdx = levels.indexOf(step);
+
+    if (currentIdx > stepIdx) return 'completed'; // Sudah lewat
+    if (currentIdx === stepIdx) return 'current'; // Sedang di sini
+    return 'upcoming'; // Belum
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-20">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6">
+    <div className="min-h-screen bg-white pt-24 pb-20 font-sans text-slate-900 selection:bg-black selection:text-white">
+      
+      {/* 1. HERO SECTION (Search) */}
+      <div className={`transition-all duration-700 ease-in-out ${searched && orderData ? 'pt-0 pb-12' : 'min-h-[60vh] flex flex-col justify-center items-center'}`}>
         
-        {/* Header */}
-        <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4">
-          <h1 className="text-3xl font-semibold text-slate-900 mb-2">Lacak Pesanan</h1>
-          <p className="text-slate-500">Pantau status pengerjaan drone Anda secara real-time.</p>
-        </div>
+        <div className="max-w-2xl w-full px-6 text-center">
+          <h1 className={`text-3xl md:text-5xl font-bold tracking-tight mb-4 transition-all duration-500 ${searched && orderData ? 'scale-75 opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
+            Lacak Pesanan
+          </h1>
+          <p className={`text-slate-500 mb-10 font-light text-lg transition-all duration-500 ${searched && orderData ? 'opacity-0 h-0 overflow-hidden' : 'opacity-100'}`}>
+            Masukkan Nomor Resi atau Order ID Anda
+          </p>
 
-        {/* Search Bar */}
-        <div className="bg-white p-2 rounded-full shadow-lg max-w-xl mx-auto mb-12 flex items-center border border-gray-100 relative z-10">
-          <div className="pl-4 text-slate-400">
-             <Package size={20} />
-          </div>
-          <form onSubmit={handleTrack} className="flex-1 flex">
+          <form onSubmit={handleTrack} className="relative group z-20">
             <input
               type="text"
               value={orderId}
               onChange={(e) => setOrderId(e.target.value)}
-              placeholder="Masukkan Order ID (Contoh: INV-8392)"
-              className="w-full bg-transparent border-none py-3 px-4 text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-0 font-medium"
+              placeholder="Contoh: ORD-12345"
+              className="w-full bg-gray-50 border border-gray-200 text-slate-900 text-lg py-5 px-6 rounded-sm focus:outline-none focus:ring-2 focus:ring-black/5 focus:border-black transition-all placeholder:text-gray-400 font-mono"
             />
             <button 
               type="submit"
               disabled={loading}
-              className="bg-slate-900 hover:bg-black text-white px-8 rounded-full font-bold transition-all disabled:bg-slate-300 flex items-center gap-2"
+              className="absolute right-2 top-2 bottom-2 bg-black text-white px-6 rounded-sm font-bold uppercase tracking-widest text-xs hover:bg-slate-800 transition-colors disabled:bg-gray-300"
             >
-              {loading ? 'Mencari...' : <><Search size={16} /> Lacak</>}
+              {loading ? <Loader2 className="animate-spin" /> : <ArrowRight />}
             </button>
           </form>
+
+          {error && (
+            <div className="mt-6 text-red-500 bg-red-50 py-3 px-4 rounded-sm text-sm border border-red-100 animate-in slide-in-from-top-2">
+              {error}
+            </div>
+          )}
         </div>
+      </div>
 
-        {/* Error State */}
-        {error && (
-          <div className="bg-red-50 border border-red-100 text-red-600 p-4 rounded-lg text-center mb-8 max-w-xl mx-auto text-sm animate-in zoom-in-95">
-            <div className="flex justify-center items-center gap-2 font-bold mb-1">
-              <AlertCircle size={18} />
-              Oops!
-            </div>
-            {error}
-          </div>
-        )}
-
-        {/* Result Card */}
-        {orderData && (
-          <div className="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden animate-in slide-in-from-bottom-8 duration-500">
+      {/* 2. RESULT SECTION */}
+      {orderData && (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 animate-in slide-in-from-bottom-10 duration-700 fade-in">
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
-            {/* Top Info Bar */}
-            <div className="bg-slate-900 p-6 md:p-8 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-               <div>
-                 <div className="text-slate-400 text-xs uppercase tracking-widest mb-1 font-bold">Order ID</div>
-                 <div className="text-2xl font-mono font-bold tracking-tight">{orderData.orderId}</div>
-                 <div className="text-slate-400 text-sm mt-1">Customer: <span className="text-white font-semibold">{orderData.customerName}</span></div>
-               </div>
-               <div className="bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg border border-white/10 text-right">
-                 <div className="text-xs text-slate-300 uppercase tracking-widest mb-1">Item</div>
-                 <div className="font-bold">{orderData.items}</div>
-               </div>
+            {/* LEFT: STATUS & MAP */}
+            <div className="lg:col-span-2 space-y-6">
+              
+              {/* Status Header */}
+              <div className="bg-white border border-gray-200 p-6 md:p-8 rounded-sm shadow-sm relative overflow-hidden">
+                <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                  <div>
+                    <div className="flex items-center gap-3 mb-2">
+                      <span className="bg-black text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest rounded-sm">
+                        {orderData.type}
+                      </span>
+                      <span className="text-xs font-mono text-gray-400 uppercase tracking-wider">
+                        #{orderData.orderId}
+                      </span>
+                    </div>
+                    <h2 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">
+                      {orderData.status === 'PENDING' && 'Pesanan Diterima'}
+                      {orderData.status === 'PROCESS' && 'Sedang Diproses'}
+                      {orderData.status === 'SHIPPED' && 'Dalam Perjalanan'}
+                      {orderData.status === 'DELIVERED' && 'Tiba di Tujuan'}
+                    </h2>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs text-gray-400 uppercase tracking-widest mb-1">Estimasi</p>
+                    <p className="text-lg font-bold">
+                      {orderData.status === 'DELIVERED' ? 'Selesai' : '3-5 Hari Kerja'}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Decorative Background Pattern */}
+                <div className="absolute top-0 right-0 -mt-10 -mr-10 w-40 h-40 bg-gray-50 rounded-full blur-3xl opacity-50 z-0"></div>
+              </div>
+
+              {/* Visual Map Mockup (Agar terlihat 'Pro') */}
+              <div className="aspect-video bg-gray-100 rounded-sm border border-gray-200 relative overflow-hidden group">
+                 {/* Gambar Peta Statis (Bisa ganti image map asli jika mau) */}
+                 <img 
+                   src="https://maps.googleapis.com/maps/api/staticmap?center=-6.2088,106.8456&zoom=12&size=800x400&style=feature:all|element:all|saturation:-100|lightness:20&key=YOUR_API_KEY_HERE" 
+                   alt="Map Visualization" 
+                   className="w-full h-full object-cover opacity-60 grayscale group-hover:scale-105 transition-transform duration-[20s]"
+                   onError={(e) => {
+                     (e.target as HTMLImageElement).src = 'https://upload.wikimedia.org/wikipedia/commons/e/ec/World_map_blank_without_borders.svg'; 
+                     (e.target as HTMLImageElement).classList.add('p-20');
+                   }}
+                 />
+                 
+                 {/* Overlay Glass */}
+                 <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent"></div>
+                 
+                 {/* Pin Animation */}
+                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                    <div className="relative">
+                       <div className="w-4 h-4 bg-black rounded-full animate-ping absolute"></div>
+                       <div className="w-4 h-4 bg-black rounded-full relative border-2 border-white shadow-xl"></div>
+                    </div>
+                 </div>
+
+                 {/* Current Location Badge */}
+                 <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur px-4 py-2 rounded-sm border border-gray-200 shadow-sm flex items-center gap-3">
+                    <div className="bg-green-500 w-2 h-2 rounded-full animate-pulse"></div>
+                    <div>
+                       <p className="text-[10px] uppercase font-bold text-gray-400 tracking-widest">Lokasi Terkini</p>
+                       <p className="text-xs font-bold text-slate-900">
+                          {orderData.status === 'PENDING' ? 'Gudang Pusat' : 
+                           orderData.status === 'PROCESS' ? 'Workshop AeroTech' :
+                           orderData.status === 'SHIPPED' ? 'Hub Logistik' : 
+                           'Alamat Tujuan'}
+                       </p>
+                    </div>
+                 </div>
+              </div>
+
             </div>
 
-            <div className="p-8 md:p-10">
-              {/* Timeline Section */}
-              <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-8 text-center md:text-left">Status Perjalanan</h3>
+            {/* RIGHT: TIMELINE & DETAILS */}
+            <div className="space-y-6">
               
-              <div className="relative">
-                {/* Garis Penghubung (Desktop: Horizontal, Mobile: Vertical) */}
-                <div className="hidden md:block absolute top-5 left-0 w-full h-1 bg-gray-100 rounded-full -z-0"></div>
-                <div className="md:hidden absolute left-5 top-0 h-full w-1 bg-gray-100 rounded-full -z-0"></div>
+              {/* Timeline Vertical Modern */}
+              <div className="bg-white border border-gray-200 p-6 md:p-8 rounded-sm shadow-sm">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-6 border-b border-gray-100 pb-2">
+                  Riwayat Status
+                </h3>
+                
+                <div className="space-y-0 relative">
+                  {/* Vertical Line */}
+                  <div className="absolute left-[11px] top-2 bottom-6 w-[1px] bg-gray-200"></div>
 
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-4">
-                  
-                  {/* Step 1: Pending */}
-                  <div className={`relative flex md:flex-col items-center md:text-center gap-4 md:gap-2 group transition-all duration-500 ${isStepActive(orderData.status, 'PENDING') ? 'opacity-100' : 'opacity-40 grayscale'}`}>
-                    <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border-4 z-10 bg-white transition-colors duration-500 ${isStepActive(orderData.status, 'PENDING') ? 'border-blue-500 text-blue-600' : 'border-gray-200 text-gray-300'}`}>
-                      <Box size={20} />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-900">Pesanan Masuk</div>
-                      <div className="text-xs text-slate-500 mt-1">Menunggu konfirmasi admin</div>
-                    </div>
-                  </div>
-
-                  {/* Step 2: Process */}
-                  <div className={`relative flex md:flex-col items-center md:text-center gap-4 md:gap-2 transition-all duration-500 ${isStepActive(orderData.status, 'PROCESS') ? 'opacity-100' : 'opacity-40 grayscale'}`}>
-                    <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border-4 z-10 bg-white transition-colors duration-500 ${isStepActive(orderData.status, 'PROCESS') ? 'border-blue-500 text-blue-600' : 'border-gray-200 text-gray-300'}`}>
-                      <Clock size={20} />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-900">Sedang Dikerjakan</div>
-                      <div className="text-xs text-slate-500 mt-1">Perakitan & setup drone</div>
-                    </div>
-                  </div>
-
-                  {/* Step 3: Shipped */}
-                  <div className={`relative flex md:flex-col items-center md:text-center gap-4 md:gap-2 transition-all duration-500 ${isStepActive(orderData.status, 'SHIPPED') ? 'opacity-100' : 'opacity-40 grayscale'}`}>
-                    <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border-4 z-10 bg-white transition-colors duration-500 ${isStepActive(orderData.status, 'SHIPPED') ? 'border-blue-500 text-blue-600' : 'border-gray-200 text-gray-300'}`}>
-                      <Truck size={20} />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-900">Dalam Pengiriman</div>
-                      <div className="text-xs text-slate-500 mt-1">Kurir sedang menuju lokasi</div>
-                    </div>
-                  </div>
-
-                  {/* Step 4: Delivered */}
-                  <div className={`relative flex md:flex-col items-center md:text-center gap-4 md:gap-2 transition-all duration-500 ${isStepActive(orderData.status, 'DELIVERED') ? 'opacity-100' : 'opacity-40 grayscale'}`}>
-                    <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center border-4 z-10 bg-white transition-colors duration-500 ${isStepActive(orderData.status, 'DELIVERED') ? 'border-green-500 text-green-600' : 'border-gray-200 text-gray-300'}`}>
-                      <CheckCircle size={20} />
-                    </div>
-                    <div>
-                      <div className="font-bold text-slate-900">Selesai</div>
-                      <div className="text-xs text-slate-500 mt-1">Pesanan telah diterima</div>
-                    </div>
-                  </div>
-
+                  {[
+                    { id: 'PENDING', label: 'Pesanan Diterima', desc: 'Menunggu konfirmasi', icon: Box },
+                    { id: 'PROCESS', label: 'Perakitan', desc: 'Unit sedang disiapkan', icon: Settings },
+                    { id: 'SHIPPED', label: 'Pengiriman', desc: 'Diserahkan ke kurir', icon: Truck },
+                    { id: 'DELIVERED', label: 'Selesai', desc: 'Diterima pelanggan', icon: CheckCircle2 }
+                  ].map((step, idx) => {
+                    const status = getStepStatus(orderData.status, step.id);
+                    const Icon = step.icon;
+                    
+                    return (
+                      <div key={idx} className={`relative flex gap-4 pb-8 last:pb-0 group ${status === 'upcoming' ? 'opacity-40 grayscale' : 'opacity-100'}`}>
+                        {/* Dot / Icon */}
+                        <div className={`relative z-10 w-6 h-6 rounded-full border flex items-center justify-center transition-all duration-500 ${
+                          status === 'completed' ? 'bg-black border-black text-white' : 
+                          status === 'current' ? 'bg-white border-black text-black ring-4 ring-gray-100' : 
+                          'bg-white border-gray-300 text-gray-300'
+                        }`}>
+                          {status === 'completed' ? <CheckCircle2 size={12}/> : <Icon size={12} />}
+                        </div>
+                        
+                        {/* Text */}
+                        <div className="pt-0.5">
+                          <p className={`text-sm font-bold transition-colors ${status === 'current' ? 'text-black' : 'text-slate-700'}`}>
+                            {step.label}
+                          </p>
+                          <p className="text-xs text-slate-400 mt-0.5">{step.desc}</p>
+                        </div>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
-            </div>
-            
-            {/* Live Update Hint */}
-            <div className="bg-blue-50 p-4 text-center text-xs text-blue-600 font-medium border-t border-blue-100">
-              Status ini diperbarui secara otomatis (Realtime)
+
+              {/* Order Details Compact */}
+              <div className="bg-gray-50 border border-gray-200 p-6 rounded-sm">
+                 <h3 className="text-xs font-bold text-slate-900 uppercase tracking-widest mb-4">Detail Paket</h3>
+                 <div className="space-y-3 text-sm">
+                    <div className="flex justify-between">
+                       <span className="text-slate-500">Customer</span>
+                       <span className="font-medium">{orderData.customerName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                       <span className="text-slate-500">Item</span>
+                       <span className="font-medium text-right max-w-[150px] truncate">{orderData.items}</span>
+                    </div>
+                    {orderData.address && (
+                      <div className="pt-3 border-t border-gray-200 mt-3">
+                         <span className="text-xs text-slate-400 block mb-1">Alamat Tujuan</span>
+                         <span className="text-slate-700 leading-relaxed text-xs">{orderData.address}</span>
+                      </div>
+                    )}
+                 </div>
+              </div>
+
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-      </div>
     </div>
   );
 };
