@@ -1,33 +1,35 @@
 import React from 'react';
-import { ArrowRight, PenTool, Wrench, PackageSearch, ShieldCheck, ChevronRight, ChevronDown } from 'lucide-react';
+import { ArrowRight, PenTool, Wrench, PackageSearch, ShieldCheck, ChevronRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-interface HomeProps {
-  onNavigate: (page: string) => void;
-}
+const Home: React.FC = () => {
+  const navigate = useNavigate();
 
-const Home: React.FC<HomeProps> = ({ onNavigate }) => {
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    window.scrollTo(0, 0);
+  };
+
   return (
-    <div className="bg-white text-slate-900">
+    <div className="bg-white text-slate-900 font-sans">
       
       {/* 1. HERO SECTION */}
       <div className="relative h-screen min-h-[600px] flex flex-col items-center justify-center overflow-hidden bg-slate-900">
         
-        {/* Background Layer with Sophisticated Overlays */}
+        {/* Background Layer */}
         <div className="absolute inset-0 z-0">
-          {/* Multi-layered Gradient for better text contrast */}
           <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-slate-900 z-10"></div>
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-transparent to-black/40 z-10"></div>
-          
           <img 
             src="images/drone.jpg"
             alt="Cinematic Drone View" 
-            className="w-full h-full object-cover animate-slow-zoom opacity-80"
+            className="w-full h-full object-cover opacity-80"
           />
         </div>
         
         <div className="relative z-20 text-center px-6 max-w-5xl mx-auto flex flex-col items-center">
           
-          {/* Futuristic Badge */}
+          {/* Badge */}
           <div className="animate-fade-in-up mb-6 md:mb-8">
             <span className="inline-flex items-center gap-2 py-2 px-5 border border-white/10 rounded-full bg-white/5 backdrop-blur-xl text-white/90 text-[9px] md:text-[10px] font-bold tracking-[0.3em] uppercase">
               <span className="relative flex h-2 w-2">
@@ -37,28 +39,28 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
               Teknologi Generasi Baru 
             </span>
           </div>
-{/* test */}
-          {/* Main Headline - Adaptive Sizes */}
+
+          {/* Main Headline */}
           <h1 className="animate-fade-in-up delay-100 text-6xl sm:text-7xl md:text-9xl font-bold text-white mb-6 tracking-tighter leading-[0.95]">
             Pandangan <br className="hidden sm:block" /> <span className="text-transparent bg-clip-text bg-gradient-to-b from-white to-white/50">Baru.</span>
           </h1>
           
-          {/* Subheadline - Better Max Width */}
+          {/* Subheadline */}
           <p className="animate-fade-in-up delay-200 text-base md:text-xl text-slate-300 mb-10 md:mb-14 font-light tracking-wide max-w-xl md:max-w-2xl mx-auto leading-relaxed">
             Mendefinisikan ulang batas angkasa dengan teknologi otonom yang <span className="text-white font-normal">presisi, cerdas,</span> dan siap untuk masa depan.
           </p>
           
-          {/* Action Buttons - Improved Mobile Layout */}
+          {/* Action Buttons */}
           <div className="animate-fade-in-up delay-300 flex flex-col sm:flex-row gap-4 w-full sm:w-auto px-4 sm:px-0">
             <button 
-              onClick={() => onNavigate('catalog')}
+              onClick={() => handleNavigate('/catalog')}
               className="group px-8 md:px-10 py-4 bg-white text-slate-900 text-[11px] font-bold uppercase tracking-widest rounded-sm transition-all hover:bg-blue-50 hover:ring-4 hover:ring-white/20 active:scale-95 flex items-center justify-center gap-2"
             >
               Lihat Katalog
               <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
             <button 
-              onClick={() => onNavigate('custom')}
+              onClick={() => handleNavigate('/custom')}
               className="px-8 md:px-10 py-4 bg-white/5 border border-white/20 backdrop-blur-md text-white text-[11px] font-bold uppercase tracking-widest rounded-sm transition-all hover:bg-white/10 hover:border-white active:scale-95"
             >
               Custom Order
@@ -66,14 +68,14 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
           </div>
         </div>
 
-        {/* Bottom Scroll Indicator - More Minimal */}
+        {/* Bottom Scroll Indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2">
           <span className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold rotate-0 mb-2">Scroll</span>
           <div className="w-[1px] h-12 bg-gradient-to-b from-white/50 to-transparent animate-pulse"></div>
         </div>
       </div>
 
-      {/* 2. PRODUCT SHOWCASE (Grid Style) */}
+      {/* 2. PRODUCT SHOWCASE */}
       <div className="max-w-[1400px] mx-auto px-6 py-20 md:py-32">
         <div className="mb-20">
           <h2 className="text-3xl md:text-4xl font-medium text-slate-900 mb-4">Didesain untuk Performa</h2>
@@ -83,7 +85,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {/* Feature 1 */}
           <div className="group cursor-pointer">
             <div className="w-full aspect-[4/3] bg-gray-100 rounded-sm mb-8 overflow-hidden relative">
               <img src="https://picsum.photos/id/1/800/600" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Camera" />
@@ -92,7 +93,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             <p className="text-sm text-slate-500 leading-relaxed pr-8">Sensor gambar terbesar di kelasnya untuk tangkapan visual yang memukau dalam segala kondisi cahaya.</p>
           </div>
 
-          {/* Feature 2 */}
           <div className="group cursor-pointer">
             <div className="w-full aspect-[4/3] bg-gray-100 rounded-sm mb-8 overflow-hidden relative">
                <img src="https://picsum.photos/id/119/800/600" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Efficiency" />
@@ -101,7 +101,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             <p className="text-sm text-slate-500 leading-relaxed pr-8">Desain bodi yang membelah angin, memberikan waktu terbang hingga 45 menit dalam sekali pengisian.</p>
           </div>
 
-          {/* Feature 3 */}
           <div className="group cursor-pointer">
             <div className="w-full aspect-[4/3] bg-gray-100 rounded-sm mb-8 overflow-hidden relative">
                <img src="https://picsum.photos/id/192/800/600" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" alt="Safety" />
@@ -112,12 +111,10 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
         </div>
       </div>
 
-      {/* 3. WHY AEROTECH (Clean Layout) */}
+      {/* 3. WHY AEROTECH */}
       <div className="bg-gray-50 py-20 md:py-32">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-            
-            {/* Left: Heading */}
             <div className="lg:col-span-4">
               <h2 className="text-3xl md:text-4xl font-medium text-slate-900 mb-6 leading-tight">
                 Mengapa AeroTech?
@@ -129,9 +126,7 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
               <div className="w-16 h-1 bg-slate-900 mb-8"></div>
             </div>
 
-            {/* Right: Points Grid */}
             <div className="lg:col-span-8 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16">
-              
               <div className="flex flex-col items-start">
                 <PenTool className="w-8 h-8 text-slate-900 mb-6" strokeWidth={1.5} />
                 <h3 className="text-lg font-semibold text-slate-900 mb-3">Desain Kustom & Presisi</h3>
@@ -139,7 +134,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                   Setiap drone dirancang berdasarkan tujuan penggunaan dan spesifikasi teknis klien untuk performa maksimal.
                 </p>
               </div>
-
               <div className="flex flex-col items-start">
                 <Wrench className="w-8 h-8 text-slate-900 mb-6" strokeWidth={1.5} />
                 <h3 className="text-lg font-semibold text-slate-900 mb-3">Engineer Lokal Berpengalaman</h3>
@@ -147,7 +141,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                   Dikembangkan, dirakit, dan diuji langsung oleh tim R&D profesional di Indonesia.
                 </p>
               </div>
-
               <div className="flex flex-col items-start">
                 <PackageSearch className="w-8 h-8 text-slate-900 mb-6" strokeWidth={1.5} />
                 <h3 className="text-lg font-semibold text-slate-900 mb-3">Tracking Pesanan Transparan</h3>
@@ -155,7 +148,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                   Pantau status produksi dan perakitan drone Anda secara real-time kapan saja menggunakan kode pesanan.
                 </p>
               </div>
-
               <div className="flex flex-col items-start">
                 <ShieldCheck className="w-8 h-8 text-slate-900 mb-6" strokeWidth={1.5} />
                 <h3 className="text-lg font-semibold text-slate-900 mb-3">Dukungan & Maintenance</h3>
@@ -163,7 +155,6 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
                   Layanan purna jual prioritas dan dukungan teknis berkelanjutan untuk menjaga armada Anda tetap mengudara.
                 </p>
               </div>
-
             </div>
           </div>
         </div>
@@ -177,74 +168,13 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             <p className="text-lg text-white/80 max-w-2xl mb-10 font-light">
               Dari pertanian presisi hingga inspeksi infrastruktur. Tingkatkan produktivitas bisnis Anda dengan data udara yang akurat.
             </p>
-            <button onClick={() => onNavigate('catalog')} className="border border-white text-white px-10 py-3 rounded-[4px] hover:bg-white hover:text-black transition-all font-medium uppercase tracking-wide text-xs">
+            <button onClick={() => handleNavigate('/catalog')} className="border border-white text-white px-10 py-3 rounded-[4px] hover:bg-white hover:text-black transition-all font-medium uppercase tracking-wide text-xs">
               Jelajahi Industri
             </button>
          </div>
       </div>
 
-      {/* 5. HOW TO ORDER (Timeline Style) */}
-      <div className="bg-white py-20 md:py-32 border-b border-gray-100">
-        <div className="max-w-[1400px] mx-auto px-6">
-          <div className="mb-20">
-            <h2 className="text-3xl md:text-4xl font-medium text-slate-900 mb-4">Cara Pemesanan</h2>
-            <p className="text-slate-500 text-lg font-light">
-              Proses pemesanan yang sederhana, efisien, dan transparan.
-            </p>
-          </div>
-
-          <div className="relative">
-            {/* Line connector */}
-            <div className="hidden md:block absolute top-0 left-0 w-full h-[1px] bg-gray-200 mt-3"></div>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-              
-              {/* Step 1 */}
-              <div className="relative pt-0 md:pt-12">
-                <div className="hidden md:block absolute top-0 left-0 w-3 h-3 bg-slate-900 rounded-full -mt-1 ring-4 ring-white"></div>
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Langkah 01</span>
-                <h3 className="text-lg font-semibold text-slate-900 mb-3">Pilih atau Custom</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">
-                  Pilih drone dari katalog kami atau ajukan custom order melalui form spesifikasi yang tersedia.
-                </p>
-              </div>
-
-              {/* Step 2 */}
-              <div className="relative pt-0 md:pt-12">
-                <div className="hidden md:block absolute top-0 left-0 w-3 h-3 bg-gray-300 rounded-full -mt-1 ring-4 ring-white"></div>
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Langkah 02</span>
-                <h3 className="text-lg font-semibold text-slate-900 mb-3">Estimasi & Konfirmasi</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">
-                  Tim kami akan meninjau kebutuhan Anda dan memberikan estimasi harga serta waktu produksi terbaik.
-                </p>
-              </div>
-
-              {/* Step 3 */}
-              <div className="relative pt-0 md:pt-12">
-                 <div className="hidden md:block absolute top-0 left-0 w-3 h-3 bg-gray-300 rounded-full -mt-1 ring-4 ring-white"></div>
-                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Langkah 03</span>
-                <h3 className="text-lg font-semibold text-slate-900 mb-3">Pembayaran</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">
-                  Lakukan pembayaran melalui metode yang aman. Produksi dimulai segera setelah konfirmasi.
-                </p>
-              </div>
-
-              {/* Step 4 */}
-              <div className="relative pt-0 md:pt-12">
-                 <div className="hidden md:block absolute top-0 left-0 w-3 h-3 bg-gray-300 rounded-full -mt-1 ring-4 ring-white"></div>
-                 <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 block">Langkah 04</span>
-                <h3 className="text-lg font-semibold text-slate-900 mb-3">Pantau & Terima</h3>
-                <p className="text-sm text-slate-500 leading-relaxed">
-                  Cek status pesanan Anda menggunakan kode pesanan hingga unit sampai di tangan Anda.
-                </p>
-              </div>
-
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 6. EMOTIONAL CTA */}
+      {/* 5. CTA */}
       <div className="bg-white py-20 md:py-32 px-6">
         <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl md:text-5xl font-medium text-slate-900 mb-6 leading-tight">
@@ -255,13 +185,13 @@ const Home: React.FC<HomeProps> = ({ onNavigate }) => {
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <button 
-                    onClick={() => onNavigate('custom')}
+                    onClick={() => handleNavigate('/custom')}
                     className="w-full sm:w-auto px-10 py-4 bg-slate-900 text-white font-medium rounded-[4px] hover:bg-black transition-all flex items-center justify-center"
                 >
                     Mulai Proyek Sekarang
                 </button>
                  <button 
-                    onClick={() => onNavigate('support')}
+                    onClick={() => handleNavigate('/support')}
                     className="w-full sm:w-auto px-10 py-4 bg-transparent text-slate-900 font-medium rounded-[4px] hover:bg-gray-50 transition-all flex items-center justify-center group"
                 >
                     Hubungi Tim Sales <ChevronRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
