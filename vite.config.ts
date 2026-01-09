@@ -7,9 +7,8 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      // --- TAMBAHKAN BAGIAN INI ---
       devOptions: {
-        enabled: true // Agar PWA jalan di localhost/npm run dev
+        enabled: true
       },
       // ----------------------------
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'mask-icon.svg'],
@@ -20,16 +19,16 @@ export default defineConfig({
         theme_color: '#ffffff',
         background_color: '#ffffff',
         display: 'standalone',
-        start_url: '/', // Wajib ada
-        scope: '/',     // Wajib ada
+        start_url: '/', 
+        scope: '/',     
         icons: [
           {
-            src: 'images/logo2.png', // Pastikan file ini ada di folder public
+            src: 'images/logo2.png', 
             sizes: '192x192',
             type: 'image/png'
           },
           {
-            src: 'images/logo2.png', // Pastikan file ini ada di folder public
+            src: 'images/logo2.png', 
             sizes: '512x512',
             type: 'image/png'
           }

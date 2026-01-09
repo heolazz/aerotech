@@ -114,7 +114,7 @@ const Catalog: React.FC = () => {
     <div className="min-h-screen bg-white text-slate-900 pt-20">
       
       {/* Header */}
-      <div className="max-w-[1400px] mx-auto px-6 py-12 md:py-24">
+      <div className="max-w-[1400px] mx-auto px-6 py-12 md:py-20">
         <h1 className="text-3xl md:text-5xl font-medium mb-4 tracking-tight">Armada Kami</h1>
         <p className="text-slate-500 text-sm md:text-xl font-light max-w-2xl">
           Eksplorasi jajaran drone canggih yang dirancang untuk setiap misi.
@@ -124,7 +124,7 @@ const Catalog: React.FC = () => {
       {/* Filter Bar */}
       <div className="sticky top-[60px] z-30 bg-white/90 backdrop-blur border-b border-gray-100 mb-8 md:mb-16">
         <div className="max-w-[1400px] mx-auto px-6 overflow-x-auto no-scrollbar">
-          <div className="flex space-x-6 md:space-x-8 py-4 min-w-max">
+          <div className="flex space-x-6 md:space-x-8 mt-4 py-4 min-w-max">
             {categories.map(cat => (
               <button
                 key={cat}
@@ -197,7 +197,7 @@ const Catalog: React.FC = () => {
         </div>
       </div>
 
-      {/* DETAIL MODAL (FIXED) */}
+      {/* DETAIL MODAL */}
       {selectedDrone && (
         <div 
           className="fixed inset-0 z-[9999] flex items-end md:items-center justify-center p-0 md:p-6 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300"
@@ -220,7 +220,7 @@ const Catalog: React.FC = () => {
             </div>
             
             {/* Right: Details (Scrollable) */}
-            <div className="w-full md:w-2/5 p-6 md:p-12 overflow-y-auto bg-white flex flex-col h-full max-h-[60vh] md:max-h-full">
+            <div className="w-full md:w-2/5 p-6 md:p-12 overflow-y-auto bg-white flex flex-col h-full max-h-[60vh] md:max-h-[90vh]">
               <div className="mb-6">
                 <span className="text-slate-500 font-bold text-xs uppercase tracking-widest mb-2 block">{selectedDrone.category}</span>
                 <h2 className="text-2xl md:text-3xl font-medium text-slate-900 mb-2 tracking-tight">{selectedDrone.name}</h2>
